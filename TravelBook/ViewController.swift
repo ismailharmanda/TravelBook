@@ -43,9 +43,37 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             
             let annotation = MKPointAnnotation()
             annotation.coordinate = touchedCoordinates
-            annotation.title = "New Annotation"
-            annotation.subtitle = "Travel Book"
-            self.mapView.addAnnotation(annotation)
+            var titleField = UITextField()
+            var descriptionField = UITextField()
+            let alert  = UIAlertController(title: "New Place", message: "", preferredStyle:.alert)
+            let confirmAction = UIAlertAction(title: "Add Place", style: .default) { action in
+                if let safeTitleField = titleField.text {
+                    annotation.title = safeTitleField
+                }
+                if let safeDescriptionField = descriptionField.text{
+                    
+                    annotation.subtitle = safeDescriptionField
+                }
+                
+                self.mapView.addAnnotation(annotation)
+                
+            }
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action in
+                alert.dismiss(animated: true)
+            }
+          
+            alert.addTextField { alertTextField in
+                alertTextField.placeholder = "Place"
+                titleField = alertTextField
+            }
+            alert.addTextField { alertTextField in
+                alertTextField.placeholder = "Additional Notes"
+                descriptionField = alertTextField
+            }
+            alert.addAction(confirmAction)
+            alert.addAction(cancelAction)
+            present(alert,animated:true)
+            
         }
             }
     

@@ -12,17 +12,30 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     
     
-   
+   var places = [Place]()
     
     @IBOutlet weak var tableView: UITableView!
     
+    
+    func getPlaces(){
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let request = NSFetchRequest<Place>(entityName: "Place")
+        request.returnsObjectsAsFaults=false
+        do{
+           try places = context.fetch(request)
+        }catch{
+            print(error)
+        }
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1
+        places.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = UITableViewCell()
+        let cell = UITableViewCell()
         var content = cell.defaultContentConfiguration()
-        content.text = "TEST"
+        content.text = places[indexPath.row].title
         cell.contentConfiguration = content
         return cell
     }
@@ -30,7 +43,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        getPlaces()
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self

@@ -35,6 +35,12 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.delegate = self
         tableView.dataSource = self
         
+        navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(onPressAddButton))
+        
+    }
+    
+    @objc func onPressAddButton(){
+        performSegue(withIdentifier: "toVC", sender: nil)
     }
     
     

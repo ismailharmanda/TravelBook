@@ -8,9 +8,11 @@
 import UIKit
 import MapKit
 import CoreLocation
+import CoreData
 
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     
     @IBOutlet weak var mapView: MKMapView!
@@ -35,6 +37,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     @objc func chooseLocation(gestureRecognizer: UILongPressGestureRecognizer){
         if gestureRecognizer.state == .began {
+            let context = appDelegate.persistentContainer.viewContext
+            let newPlace = NSEntityDescription.insertNewObject(forEntityName: "Place", into: context)
             let touchedPoint = gestureRecognizer.location(in: mapView)
             let touchedCoordinates =
             self.mapView.convert(touchedPoint, toCoordinateFrom: self.mapView)
@@ -49,10 +53,19 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             let confirmAction = UIAlertAction(title: "Add Place", style: .default) { action in
                 if let safeTitleField = titleField.text {
                     annotation.title = safeTitleField
+                    newPlace.setValue(safeTitleField, forKey: "title")
                 }
                 if let safeDescriptionField = descriptionField.text{
-                    
                     annotation.subtitle = safeDescriptionField
+                    newPlace.setValue(safeDescriptionField, forKey: "subtitle")
+                }
+                newPlace.setValue(touchedCoordinates.latitude, forKey: "latitude")
+                newPlace.setValue(touchedCoordinates.longitude, forKey: "longitude")
+                newPlace.setValue(UUID(), forKey: "id")
+                do {
+                    try context.save()
+                }catch{
+                    print(error)
                 }
                 
                 self.mapView.addAnnotation(annotation)

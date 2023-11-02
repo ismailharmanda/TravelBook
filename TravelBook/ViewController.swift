@@ -37,6 +37,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         mapView.addGestureRecognizer(gestureRecognizer)
         
         if (selectedLocation != nil){
+            let span = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
             let location = CLLocationCoordinate2D(latitude: selectedLocation!.latitude, longitude: selectedLocation!.longitude)
             let region = MKCoordinateRegion(center: location, span: span)
             let annotation = MKPointAnnotation()

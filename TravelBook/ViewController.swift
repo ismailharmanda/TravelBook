@@ -80,6 +80,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
                 newPlace.setValue(UUID(), forKey: "id")
                 do {
                     try context.save()
+                    self.navigationController?.popViewController(animated: true)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "newData"), object: nil)
                 }catch{
                     print(error)
                 }

@@ -8,7 +8,7 @@
 import UIKit
 import CoreData
 
-class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UINavigationControllerDelegate {
 
     
     
@@ -18,13 +18,14 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     @IBOutlet weak var tableView: UITableView!
     
     
-    func getPlaces(){
+    @objc func getPlaces(){
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
         let request = NSFetchRequest<Place>(entityName: "Place")
         request.returnsObjectsAsFaults=false
         do{
            try places = context.fetch(request)
+            tableView.reloadData()
         }catch{
             print(error)
         }
@@ -49,10 +50,12 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        getPlaces()
+ 
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
+        
+        getPlaces()
         
         navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(onPressAddButton))
         
@@ -68,7 +71,10 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewWillAppear(_ animated: Bool) {
         selectedPlace = nil
+        NotificationCenter.default.addObserver(self, selector: #selector(getPlaces), name: NSNotification.Name(rawValue: "newData"), object: nil)
     }
+    
+    @objc
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "toVC"){

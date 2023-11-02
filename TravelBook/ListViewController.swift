@@ -13,6 +13,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     
    var places = [Place]()
+    var selectedPlace: Place?
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -39,6 +40,11 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.contentConfiguration = content
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selectedPlace = places[indexPath.row]
+        goToDetail()
+    }
 
     
     override func viewDidLoad() {
@@ -56,6 +62,22 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         performSegue(withIdentifier: "toVC", sender: nil)
     }
     
+    func goToDetail(){
+        performSegue(withIdentifier: "toVC", sender: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        selectedPlace = nil
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "toVC"){
+            let destionVC = segue.destination as! ViewController
+            if let safeSelectedPlace = selectedPlace {
+                destionVC.selectedLocation = selectedPlace
+            }
+        }
+    }
     
 
     

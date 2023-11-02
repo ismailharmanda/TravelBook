@@ -14,6 +14,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    var selectedLocation: Place?
+    
     
     @IBOutlet weak var mapView: MKMapView!
     let span = MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001)
@@ -33,6 +35,19 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(chooseLocation(gestureRecognizer: )))
         gestureRecognizer.minimumPressDuration = 1
         mapView.addGestureRecognizer(gestureRecognizer)
+        
+        if (selectedLocation != nil){
+            let location = CLLocationCoordinate2D(latitude: selectedLocation!.latitude, longitude: selectedLocation!.longitude)
+            let region = MKCoordinateRegion(center: location, span: span)
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = location
+            let titleField = selectedLocation!.title
+            let descriptionField = selectedLocation!.subtitle
+            annotation.title = titleField
+            annotation.subtitle = descriptionField
+            mapView.addAnnotation(annotation)
+            mapView.setRegion(region, animated: true)
+        }
     }
     
     @objc func chooseLocation(gestureRecognizer: UILongPressGestureRecognizer){
@@ -90,7 +105,15 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         }
             }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        selectedLocation = nil
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
+        if (selectedLocation != nil){
+            return
+        }
         
         let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)
         

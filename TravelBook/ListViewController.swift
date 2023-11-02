@@ -38,6 +38,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         let cell = UITableViewCell()
         var content = cell.defaultContentConfiguration()
         content.text = places[indexPath.row].title
+        content.secondaryText = places[indexPath.row].subtitle
         cell.contentConfiguration = content
         return cell
     }
@@ -58,6 +59,9 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         getPlaces()
         
         navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(onPressAddButton))
+        
+        var longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(sender:)))
+        tableView.addGestureRecognizer(longPressGesture)
         
     }
     
@@ -85,7 +89,88 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete){
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let context = appDelegate.persistentContainer.viewContext
+            let predicate = NSPredicate(format: "id = %@", places[indexPath.row].id! as CVarArg)
+            let request = NSFetchRequest<Place>(entityName: "Place")
+            request.predicate = predicate
+            do{
+               let selectedItem = try context.fetch(request)[0]
+                context.delete(selectedItem)
+                places.remove(at: indexPath.row)
+                try context.save()
+                tableView.reloadData()
+            }catch{
+                print(error)
+            }
+            
+        }
+        
+    }
+    
+    
+    @objc private func handleLongPress(sender: UILongPressGestureRecognizer) {
+            if sender.state == .began {
+                let touchPoint = sender.location(in: tableView)
+                if let indexPath = tableView.indexPathForRow(at: touchPoint) {
+                    // your code here, get the row for the indexPath or do whatever you want
+                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                    let context = appDelegate.persistentContainer.viewContext
+                    let selectedItem = self.places[indexPath.row]
+                    
+                    var titleField = UITextField()
+                    var subtitleField = UITextField()
+                    titleField.text = selectedItem.title
+                    subtitleField.text = selectedItem.subtitle
+                    
+                    
+                    let alert  = UIAlertController(title: "Edit Your Placemark", message: "", preferredStyle:.alert)
+                    
+                    let confirmAction = UIAlertAction(title: "Edit", style: .default){
+                        (action) in
+                        // What will happen once the user clicks the Add Item button on our UIAlert
+                        selectedItem.title = titleField.text
+                        selectedItem.subtitle = subtitleField.text
+                        
+                        do{
+                            try context.save()
+                            self.tableView.reloadData()
+                        } catch{
+                            print(error)
+                        }
+                        
+                       
+                  
+                        
+                        
+                    }
+                    
+                    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { action in
+                        alert.dismiss(animated: true)
+                    }
+                  
+                    alert.addTextField { alertTextField in
+                        alertTextField.placeholder = "Place"
+                        alertTextField.text = titleField.text
+                        titleField = alertTextField
+                        
+                    }
+                    alert.addTextField { alertTextField in
+                        alertTextField.placeholder = "Additional Notes"
+                        alertTextField.text = subtitleField.text
+                        subtitleField = alertTextField
+                    }
+                    alert.addAction(confirmAction)
+                    alert.addAction(cancelAction)
+                    present(alert,animated:true)
+                    
+                    
+                 
+                }
+            }
+        }
     
 
     /*
@@ -98,4 +183,5 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     */
 
+    
 }

@@ -19,6 +19,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     @IBOutlet weak var mapView: MKMapView!
     let span = MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001)
+    var didLocationUpdatedFirstTime = false
     
     var locationManager = CLLocationManager()
     
@@ -114,7 +115,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        if (selectedLocation != nil){
+        if (selectedLocation != nil || didLocationUpdatedFirstTime){
             return
         }
         
@@ -123,7 +124,50 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
   
         let region = MKCoordinateRegion(center: location, span: span)
         
+        didLocationUpdatedFirstTime = true
+        
         mapView.setRegion(region, animated: true)
+    }
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        
+        if annotation is MKUserLocation {
+            return nil
+        }
+    
+        let reuseId = "myAnnotation"
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKMarkerAnnotationView
+        
+        if pinView == nil {
+            pinView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            pinView?.canShowCallout = true
+            
+            let button = UIButton(type: .detailDisclosure)
+            pinView?.rightCalloutAccessoryView = button
+        } else {
+            pinView?.annotation = annotation
+        }
+        
+        
+        return pinView
+    }
+    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        
+        var requestLocation = CLLocation(latitude: (view.annotation?.coordinate.latitude)!, longitude: (view.annotation?.coordinate.longitude)!)
+        
+        CLGeocoder().reverseGeocodeLocation(requestLocation) { placemarks, error in
+            
+            if let safePlacemarks = placemarks {
+                let newPlacemark = MKPlacemark(placemark: safePlacemarks[0])
+                let item = MKMapItem(placemark: newPlacemark)
+                item.name = (view.annotation?.title)!
+                
+                let launchOptions = [MKLaunchOptionsDirectionsModeKey:MKLaunchOptionsDirectionsModeDriving]
+                
+                item.openInMaps(launchOptions: launchOptions)
+            }
+        }
     }
 
     

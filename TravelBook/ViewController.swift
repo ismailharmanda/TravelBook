@@ -15,6 +15,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     var selectedLocation: Place?
+    var currentLocation: CLLocationCoordinate2D?
     
     
     @IBOutlet weak var mapView: MKMapView!
@@ -32,6 +33,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        
+        mapView.showsUserLocation = true
         
         let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(chooseLocation(gestureRecognizer: )))
         gestureRecognizer.minimumPressDuration = 1
@@ -133,18 +136,23 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
+        self.currentLocation = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)
+        
         if (selectedLocation != nil || didLocationUpdatedFirstTime){
             return
         }
         
-        let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)
         
-  
-        let region = MKCoordinateRegion(center: location, span: span)
+        
+        if let safecurrentLocation = currentLocation{
+            let region = MKCoordinateRegion(center: safecurrentLocation, span: span)
+            mapView.setRegion(region, animated: true)
+        }
+       
         
         didLocationUpdatedFirstTime = true
         
-        mapView.setRegion(region, animated: true)
+        
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -188,6 +196,13 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         }
     }
 
+    @IBAction func onPressCurrentLocation(_ sender: UIButton) {
+        if let safeCurrentLocation = currentLocation{
+            
+            let region = MKCoordinateRegion(center: safeCurrentLocation, span: span)
+            mapView.setRegion(region, animated: true)
+        }
+    }
     
 }
 

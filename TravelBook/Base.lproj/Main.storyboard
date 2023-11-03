@@ -54,9 +54,8 @@
                                 <rect key="frame" x="0.0" y="103" width="393" height="715"/>
                                 <standardMapConfiguration key="preferredConfiguration"/>
                             </mapView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lJy-ZF-wxi">
-                                <rect key="frame" x="272" y="698" width="86" height="93"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lJy-ZF-wxi">
+                                <rect key="frame" x="263.33333333333331" y="715.66666666666663" width="99.666666666666686" height="72.333333333333371"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" imagePlacement="top" title="">
                                     <imageReference key="image" image="location.fill.viewfinder" catalog="system" symbolScale="large" variableValue="0.0"/>
@@ -73,6 +72,8 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="lGJ-NT-MYq" secondAttribute="bottom" id="3g9-en-IWM"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="lGJ-NT-MYq" secondAttribute="trailing" id="OiL-VZ-xmP"/>
                             <constraint firstItem="lGJ-NT-MYq" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="kSj-rH-ghl"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="lJy-ZF-wxi" secondAttribute="trailing" constant="30" id="osE-rK-BpQ"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="lJy-ZF-wxi" secondAttribute="bottom" constant="30" id="p9L-fU-hjG"/>
                             <constraint firstItem="lGJ-NT-MYq" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="ycS-vt-Yx1"/>
                         </constraints>
                     </view>

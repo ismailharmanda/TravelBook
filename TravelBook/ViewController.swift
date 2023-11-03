@@ -50,6 +50,24 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             mapView.addAnnotation(annotation)
             mapView.setRegion(region, animated: true)
         }
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<Place>(entityName: "Place")
+        do {
+           let locations = try context.fetch(fetchRequest)
+            if (locations.count>0){
+                for location in locations{
+                    let annotation = MKPointAnnotation()
+                    annotation.coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+                    annotation.title = location.title
+                    annotation.subtitle = location.subtitle
+                    mapView.addAnnotation(annotation)
+                }
+          
+            }
+        } catch { print(error)
+        }
     }
     
     @objc func chooseLocation(gestureRecognizer: UILongPressGestureRecognizer){
